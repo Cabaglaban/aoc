@@ -20,7 +20,7 @@ print('a', find_a(demo_in))
 print('b', find_b(demo_in))
 print()
 with open(in_file, 'r') as f:
-    x = [r.strip() for r in f.readlines()]
+    x = f.read().strip()
     print('a', find_a(x))
     print('b', find_b(x))
     
