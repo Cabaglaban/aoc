@@ -1,12 +1,7 @@
-from os import path as ospath
 import sys
 from collections import Counter
 from functools import cmp_to_key
-
-dirname = ospath.dirname(__file__)
-
-INPUT_FILE = "example"
-INPUT_FILE = "input"
+from aoc.utils import *
 
 FACE_TO_NUM = {
     "A": 14,
@@ -56,17 +51,12 @@ def score_cmp(item1, item2):
 
     return 1 if sa > sb else -1
 
-def split_strip(x: str, d: str):
-    return [i.strip() for i in x.split(d)]
-
-
 def parse_line(line: str):
     row = split_strip(line, " ")
     return (row[0], int(row[1]))
 
 
-with open(ospath.join(dirname, INPUT_FILE)) as f:
-    input = [parse_line(l.strip()) for l in f.readlines()]
+input = [parse_line(l) for l in read_day_input()]
 
 input.sort(key=cmp_to_key(score_cmp))
 win = (idx * hand[1] for idx, hand in enumerate(input, start=1))
