@@ -1,5 +1,7 @@
 import os
 import inspect
+from itertools import product
+from collections.abc import Iterable
 
 dirname = os.path.dirname(__file__)
 
@@ -28,3 +30,12 @@ def read_day_input(example: bool = False, sfx: str = "", line_parser=None):
         d, y = fname.split("/")[::-1][1:3]
         return read_input(y, d, example, sfx, line_parser)
     raise ValueError(f"failed to parse year/day from {fname}")
+
+def generate_runs(args, example=[True, False]):
+    for p in product(example, *args):
+        r = []
+        for i in p:
+            if not isinstance(i, Iterable):
+                i = [i]
+            r.extend(i)
+        yield r

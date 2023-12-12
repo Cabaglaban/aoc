@@ -33,11 +33,8 @@ def parse_line(line, fold_mul):
     )
 
 
-runs = [
-    (True, 1, "[part1] ex:"),
-    (False, 1, "[part1] input:"),
-    (True, 5, "[part2] ex:"),
-    (False, 5, "[part2] input:"),
-]
-for example, fold_mul, run in runs:
-    print(f"{run}\t", sum(read_day_input(example, line_parser=partial(parse_line, fold_mul=fold_mul))))
+for ex, fold_mul, p in generate_runs(args=[[(1, "P1"), (5, "P2")]]):
+    print(
+        f"[{p}][ex={int(ex)}] ",
+        sum(read_day_input(ex, line_parser=partial(parse_line, fold_mul=fold_mul))),
+    )
