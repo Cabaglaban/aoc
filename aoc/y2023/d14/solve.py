@@ -2,68 +2,53 @@ from aoc.utils import *
 from collections import Counter
 
 
-def tilt_n(input):
+def tilt_v(input: list, block_reset: int, block_add: int, rrange: range, round_cond: callable):
     for x in range(len(input[0])):
-        block = -1
-        for y in range(len(input)):
+        block = block_reset
+        for y in rrange:
             if input[y][x] == ".":
                 continue
-            if input[y][x] == "O" and block < y - 1:
-                input[block + 1][x] = "O"
+            if input[y][x] == "O" and round_cond(block, y):
+                input[block + block_add][x] = "O"
                 input[y][x] = "."
-                block += 1
+                block += block_add
                 continue
             block = y
 
     return input
+
+
+def tilt_n(input):
+    return tilt_v(input, -1, 1, range(len(input)), lambda block, y: block < y - 1)
 
 
 def tilt_s(input):
     rows = len(input)
-    for x in range(len(input[0])):
-        block = rows
-        for y in range(rows - 1, -1, -1):
+    return tilt_v(input, rows, -1, range(rows - 1, -1, -1), lambda block, y: block > y + 1)
+
+
+def tilt_h(input: list, block_reset: int, block_add: int, crange: range, round_cond: callable):
+    for y in range(len(input)):
+        block = block_reset
+        for x in crange:
             if input[y][x] == ".":
                 continue
-            if input[y][x] == "O" and block > y + 1:
-                input[block - 1][x] = "O"
+            if input[y][x] == "O" and round_cond(block, x):
+                input[y][block + block_add] = "O"
                 input[y][x] = "."
-                block -= 1
+                block += block_add
                 continue
-            block = y
+            block = x
     return input
 
 
 def tilt_w(input):
-    for y in range(len(input)):
-        block = -1
-        for x in range(len(input[0])):
-            if input[y][x] == ".":
-                continue
-            if input[y][x] == "O" and block < x - 1:
-                input[y][block + 1] = "O"
-                input[y][x] = "."
-                block += 1
-                continue
-            block = x
-
-    return input
+    return tilt_h(input, -1, 1, range(len(input[0])), lambda block, x: block < x - 1)
 
 
 def tilt_e(input):
     cols = len(input[0])
-    for y in range(len(input)):
-        block = cols
-        for x in range(cols - 1, -1, -1):
-            if input[y][x] == ".":
-                continue
-            if input[y][x] == "O" and block > x + 1:
-                input[y][block - 1] = "O"
-                input[y][x] = "."
-                block -= 1
-                continue
-            block = x
-    return input
+    return tilt_h(input, cols, -1, range(cols - 1, -1, -1), lambda block, x: block > x + 1)
 
 
 def tilt_cycle(input):
@@ -81,10 +66,9 @@ def solve1(input):
 
 def solve2(input):
     input = [list(l) for l in input]
-    seen = []
+    seen, loop = [], []
     repeat = int(1e9)
     loop_sidx = -1
-    loop = []
 
     for n in range(repeat):
         k = "\n".join("".join(l) for l in input)
