@@ -1,16 +1,20 @@
 import os
+import re
 import inspect
 from itertools import product
-from collections.abc import Iterable
+from collections.abc import Iterable, Callable
 
 dirname = os.path.dirname(__file__)
+RE_SPACE = re.compile(r"\s+")
 
 
-def split_strip(x: str, d: str):
-    return [i.strip() for i in x.split(d)]
+def split_strip(x: str, d: str | re.Pattern, cast=str):
+    return [cast(i.strip()) for i in (d.split(x) if isinstance(d, re.Pattern) else x.split(d))]
 
 
-def read_input(year: int | str, day: int | str, example: bool = False, sfx: str = "", line_parser=None):
+def read_input(
+    year: int | str, day: int | str, example: bool = False, sfx: str = "", line_parser: bool | Callable | None = None
+):
     fname = ("example" if example else "input") + sfx
     if year is int:
         year = f"y{year}"
@@ -18,13 +22,15 @@ def read_input(year: int | str, day: int | str, example: bool = False, sfx: str 
         day = f"d{day:02d}"
 
     with open(os.path.join(dirname, year, day, fname)) as f:
-        lines = [l.strip() for l in f.readlines()]
-        if line_parser is not None:
-            lines = [line_parser(l) for l in lines]
-        return lines
+        if line_parser is None:
+            lines = [l.strip() for l in f.readlines()]
+            if callable(line_parser):
+                lines = [line_parser(l) for l in lines]
+            return lines
+        return f.read()
 
 
-def read_day_input(example: bool = False, sfx: str = "", line_parser=None):
+def read_day_input(example: bool = False, sfx: str = "", line_parser: bool | Callable | None = None):
     fname = inspect.stack()[-1].filename
     if fname.endswith("solve.py"):
         d, y = fname.split("/")[::-1][1:3]
