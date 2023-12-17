@@ -12,6 +12,10 @@ def split_strip(x: str, d: str | re.Pattern, cast=str):
     return [cast(i.strip()) for i in (d.split(x) if isinstance(d, re.Pattern) else x.split(d))]
 
 
+def parse_grid(lines: list[str]) -> tuple[list[str], int, int]:
+    return lines, len(lines[0]), len(lines)
+
+
 def read_input(
     year: int | str, day: int | str, example: bool = False, sfx: str = "", line_parser: bool | Callable | None = None
 ):
