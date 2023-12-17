@@ -50,3 +50,62 @@ def generate_runs(args, example=[True, False]):
                 i = [i]
             r.extend(i)
         yield r
+
+
+class P(tuple):
+    @property
+    def x(self):
+        return self[0]
+
+    @property
+    def y(self):
+        return self[1]
+
+    @property
+    def p(self):
+        return (self.x, self.y)
+
+    def __add__(self, v):
+        if isinstance(v, tuple):
+            v = P(v)
+
+        return P((self.x + v.x, self.y + v.y))
+
+    def __mul__(self, v):
+        assert isinstance(v, int)
+        return P((self.x * v, self.y * v))
+
+    def __neg__(self):
+        return P((-self.x, -self.y))
+
+    def __repr__(self) -> str:
+        return f"({self.x}, {self.y})"
+
+
+U = P((0, -1))
+R = P((1, 0))
+D = P((0, 1))
+L = P((-1, 0))
+
+
+class Grid:
+    def __init__(self, grid) -> None:
+        self.grid = grid
+        self.w = len(grid[0])
+        self.h = len(grid)
+
+    @staticmethod
+    def from_input(input):
+        return Grid(input)
+
+    def in_bounds(self, p):
+        return self._in_bounds(*(p.p if isinstance(p, P) else p))
+
+    def _in_bounds(self, x, y):
+        return (0 <= x <= self.w - 1) and (0 <= y <= self.h - 1)
+
+    def at(self, p, oob="out-of-bounds"):
+        x, y = p.p if isinstance(p, P) else p
+        if not self._in_bounds(x, y):
+            return oob
+        return self.grid[y][x]
