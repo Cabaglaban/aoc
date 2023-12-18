@@ -26,9 +26,10 @@ def read_input(
         day = f"d{day:02d}"
 
     with open(os.path.join(dirname, year, day, fname)) as f:
-        if line_parser is None:
+        is_callable = callable(line_parser)
+        if line_parser is None or is_callable:
             lines = [l.strip() for l in f.readlines()]
-            if callable(line_parser):
+            if is_callable:
                 lines = [line_parser(l) for l in lines]
             return lines
         return f.read()
@@ -86,6 +87,7 @@ U = P((0, -1))
 R = P((1, 0))
 D = P((0, 1))
 L = P((-1, 0))
+STR2DIR = {d: globals()[d] for d in "URDL"}
 
 
 class Grid:
